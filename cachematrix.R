@@ -1,15 +1,44 @@
-## Put comments here that give an overall description of what your
-## functions do
+## The functions makeCacheMatrix() and cacheSolve() show the caching ability of R due
+## lexical scoping and decrease computation time.
 
-## Write a short comment describing this function
-
+## Description :: Creates a special matrix object that can cache inverse a given matrix
+## Input       :: x -> Matrix is expected
+##                     Default input is 1x1 matrix with NA
+## Output      :: A special object with 'input matrix' and 'cached inverse matrix'
 makeCacheMatrix <- function(x = matrix()) {
-
+  inv <- NULL
+  
+  set <- function(y) {
+    x <<- y
+    inv <<- NULL
+  }
+  
+  get <- function() x
+  
+  setInverseMat <- function(solve) inv <<- solve
+  getInverseMat <- function() inv
+  
+  list(set = set, get = get, setInverseMat = setInverseMat, getInverseMat = getInverseMat)
 }
 
-
-## Write a short comment describing this function
+## Description :: Calculates inverse matrix on an object stored with makeCacheMatrix.
+##                If inverse matrix is already calculated, then cached data is returned.
+## Input       :: x -> Special matrix object created with makeCacheMatrix().
+##                ... -> further arguments passed to or from other methods
+## Output      :: Matrix containg inverse
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+  inv <- x$getInvMat()
+  
+  # Inverse has already been calculated.
+  if(!is.null(inv)) {
+    message("getting cached data")
+    return(inv)
+  }
+  
+  data <- x$get()
+  inv <- solve(data, ...)
+  x$setInvMat(inv)
+  
+  return(inv)
 }
