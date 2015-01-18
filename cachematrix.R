@@ -13,14 +13,17 @@
 makeCacheMatrix <- function(x = matrix()) {
   inv <- NULL
   
-  set <- function(y) {
+  ## Check if matrix has changed. If matrix has changed, set inverse to null
+  ## as cached inverse is not valid anymore
+  set <- function(y){
+    if(!identical(x,y)) inv <<- NULL
     x <<- y
-    inv <<- NULL
   }
   
   get <- function() x
   
-  setInverseMat <- function(solve) inv <<- solve
+  ## Allows to set matrix directly. Caution should be taken to use it directly 
+  setInverseMat <- function(mat) inv <<- mat  
   getInverseMat <- function() inv
   
   list(set = set, get = get, setInverseMat = setInverseMat, getInverseMat = getInverseMat)
@@ -34,14 +37,15 @@ makeCacheMatrix <- function(x = matrix()) {
 ## Output      :: Matrix containg inverse                                                ##
 ###########################################################################################
 cacheSolve <- function(x, ...) {
+  ## Inverse has already been calculated. No need to track as inverse is set to null
   inv <- x$getInverseMat()
-  
-  # Inverse has already been calculated.
   if(!is.null(inv)) {
-    message("getting cached data")
+    message("Getting cached data")
     return(inv)
   }
   
+  ## Calculate Inverse of matrix  
+  message("Calculating inverse of a matrix")
   data <- x$get()
   inv <- solve(data)
   x$setInverseMat(inv)
@@ -54,11 +58,25 @@ cacheSolve <- function(x, ...) {
 ## 
 ##  source("cachematrix.R")
 ##  set.seed(111)
-##  randVal <- rnorm(100)
-##  matObj <- makeCacheMatrix(matrix(randVal, 10, 10))
+##  randVal1 <- rnorm(100)
+##
+##  matObj <- makeCacheMatrix(matrix(randVal1, 10, 10))
 ##  class(matObj)
 ##  invMat1 <- cacheSolve(matObj)
 ##  class(invMat1)
 ##  invMat2 <- cacheSolve(matObj)
+##
+##  matObj$get()
+##  matObj$getInverseMat()
+## 
+##  matObj$set(matrix(randVal1,10,10))
+##  matObj$getInverseMat()
+##  invMat3 <- cacheSolve(matObj)
+##
+##  set.seed(1)
+##  randVal2 <- rnorm(100)
+##  matObj$set(matrix(randVal2,10,10))
+##  matObj$getInverseMat()
+##  invMat4 <- cacheSolve(matObj)
 ##
 ####################################################################
