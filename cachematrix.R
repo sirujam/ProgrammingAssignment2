@@ -47,7 +47,7 @@ cacheSolve <- function(x, ...) {
   ## Calculate Inverse of matrix  
   message("Calculating inverse of a matrix")
   data <- x$get()
-  inv <- solve(data)
+  inv <- solve(data, ...)
   x$setInverseMat(inv)
   
   return(inv)
